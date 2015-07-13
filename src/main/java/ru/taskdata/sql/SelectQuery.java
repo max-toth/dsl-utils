@@ -14,6 +14,8 @@ public class SelectQuery implements Query {
 
     private String schema = StringUtils.EMPTY;
 
+    private Limit limit;
+    private Offset offset;
     private List<Field> fields = new ArrayList<>();
     private Table table;
     private Map<Table, Condition> innerJoinTables = new HashMap<>();
@@ -47,24 +49,62 @@ public class SelectQuery implements Query {
     }
 
     @Override
-    public String build() {
+    public String build() throws Exception {
         StringBuilder builder = new StringBuilder();
 
         builder.append(SELECT);
+
+        if (fields.isEmpty()) throw new Exception("Fields for SELECT query is EMPTY. Set up array of fields or put '*' instead.");
         builder.append(fieldsToString());
+
         builder.append(FROM);
+
+        if (table == null) throw new Exception("Table for SELECT query is NULL.");
         builder.append(schema).append(this.table.toString());
+
         for (Table table : innerJoinTables.keySet()) {
-            builder.append(INNER_JOIN).append(schema).append(table.toString()).append(ON).append(innerJoinTables.get(table).toString());
+            Condition condition = innerJoinTables.get(table);
+            if (condition == null) {
+                throw new Exception("Condition for table " + table.toString() + " is NULL.");
+            }
+            builder.append(INNER_JOIN).append(schema).append(table.toString()).append(ON).append(condition.toString());
         }
 
         for (Table table : leftJoinTables.keySet()) {
-            builder.append(LEFT_JOIN).append(schema).append(table.toString()).append(ON).append(leftJoinTables.get(table).toString());
+            Condition condition = leftJoinTables.get(table);
+            if (condition == null) {
+                throw new Exception("Condition for table " + table.toString() + " is NULL.");
+            }
+            builder.append(LEFT_JOIN).append(schema).append(table.toString()).append(ON).append(condition.toString());
         }
 
         if (!this.conditions.isEmpty()) {
             builder.append(WHERE);
             builder.append(conditionsToString());
+        }
+
+        if (this.limit != null) {
+            if (this.limit.getUseValue()) {
+                Integer value = this.limit.getValue();
+                if (value == null) throw new Exception("Value for limit not set.");
+                builder.append(LIMIT).append(value);
+            } else {
+                String limitPlaceholder = this.limit.getPlaceholder();
+                if (limitPlaceholder == null) throw new Exception("Placeholder for limit not set.");
+                builder.append(LIMIT).append(":").append(limitPlaceholder);
+            }
+        }
+
+        if (this.offset != null) {
+            if (this.offset.getUseValue()) {
+                Integer value = this.offset.getValue();
+                if (value == null) throw new Exception("Value for offset not set.");
+                builder.append(OFFSET).append(value);
+            } else {
+                String offsetPlaceholder = this.offset.getPlaceholder();
+                if (offsetPlaceholder == null) throw new Exception("Placeholder for offset not set.");
+                builder.append(OFFSET).append(":").append(offsetPlaceholder);
+            }
         }
 
         return builder.toString();
@@ -93,6 +133,38 @@ public class SelectQuery implements Query {
     @Override
     public Query leftJoin(Table table, Condition condition) {
         this.leftJoinTables.put(table, condition);
+        return this;
+    }
+
+    @Override
+    public Query limit(String placeholder) {
+        this.limit = new Limit();
+        this.limit.setPlaceholder(placeholder);
+        this.limit.setUseValue(false);
+        return this;
+    }
+
+    @Override
+    public Query limit(Integer value) {
+        this.limit = new Limit();
+        this.limit.setValue(value);
+        this.limit.setUseValue(true);
+        return this;
+    }
+
+    @Override
+    public Query offset(String placeholder) {
+        this.offset = new Offset();
+        this.offset.setPlaceholder(placeholder);
+        this.offset.setUseValue(false);
+        return this;
+    }
+
+    @Override
+    public Query offset(Integer value) {
+        this.offset = new Offset();
+        this.offset.setValue(value);
+        this.offset.setUseValue(true);
         return this;
     }
 

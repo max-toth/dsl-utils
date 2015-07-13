@@ -15,4 +15,11 @@ public interface SQLConstants {
     String INNER_JOIN = " INNER JOIN ";
     String ON = " ON ";
     String LEFT_JOIN = " LEFT JOIN ";
+    String SELECT = "SELECT ";
+    String FROM = " FROM ";
+    String WHERE = " WHERE ";
+    String AND = " AND ";
+    String OR = " OR ";
+    String LIMIT = " LIMIT ";
+    String OFFSET = " OFFSET ";
 }

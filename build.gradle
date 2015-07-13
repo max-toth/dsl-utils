@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+    source {['src/main/java']}
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+dependencies {
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'junit:junit:4.11'
+}

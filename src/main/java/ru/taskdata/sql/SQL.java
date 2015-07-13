@@ -1,5 +1,7 @@
 package ru.taskdata.sql;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author mtolstykh
  * @since 24.06.2015.
@@ -15,7 +17,14 @@ public class SQL {
     }
 
     public static Field field(Table table, String field) {
-        return new Field(table.getAlias() + "." + field);
+        String alias = table.getAlias();
+        if (StringUtils.isEmpty(alias)) try {
+            throw new Exception("Please set up alias for table [" + table.toString() + "] first.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Field(field);
+        }
+        return new Field(alias + "." + field);
     }
 
     public static Table table(String table) {

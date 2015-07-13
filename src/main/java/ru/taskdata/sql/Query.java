@@ -9,18 +9,22 @@ public interface Query {
     Query from(Table table);
     Query where(Condition condition);
 
-    String build();
+    String build() throws Exception;
 
     Query and(Condition condition);
     Query or(Condition condition);
 
-    String SELECT = "SELECT ";
-    String FROM = " FROM ";
-    String WHERE = " WHERE ";
-    String AND = " AND ";
-    String OR = " OR ";
+
 
     Query innerJoin(Table table, Condition condition);
 
     Query leftJoin(Table table, Condition condition);
+
+    Query limit(String placeholder);
+
+    Query limit(Integer value);
+
+    Query offset(String placeholder);
+
+    Query offset(Integer value);
 }
