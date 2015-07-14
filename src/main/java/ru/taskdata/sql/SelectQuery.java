@@ -18,6 +18,8 @@ public class SelectQuery implements Query {
     private Offset offset;
     private List<Field> fields = new ArrayList<>();
     private Table table;
+    private List<Table> innerJoinOrderTables = new ArrayList<>();
+    private List<Table> leftJoinOrderTables = new ArrayList<>();
     private Map<Table, Condition> innerJoinTables = new HashMap<>();
     private Map<Table, Condition> leftJoinTables = new HashMap<>();
     private List<Condition> conditions = new ArrayList<>();
@@ -62,7 +64,7 @@ public class SelectQuery implements Query {
         if (table == null) throw new Exception("Table for SELECT query is NULL.");
         builder.append(schema).append(this.table.toString());
 
-        for (Table table : innerJoinTables.keySet()) {
+        for (Table table : innerJoinOrderTables) {
             Condition condition = innerJoinTables.get(table);
             if (condition == null) {
                 throw new Exception("Condition for table " + table.toString() + " is NULL.");
@@ -70,7 +72,7 @@ public class SelectQuery implements Query {
             builder.append(INNER_JOIN).append(schema).append(table.toString()).append(ON).append(condition.toString());
         }
 
-        for (Table table : leftJoinTables.keySet()) {
+        for (Table table : leftJoinOrderTables) {
             Condition condition = leftJoinTables.get(table);
             if (condition == null) {
                 throw new Exception("Condition for table " + table.toString() + " is NULL.");
@@ -126,12 +128,14 @@ public class SelectQuery implements Query {
 
     @Override
     public Query innerJoin(Table table, Condition condition) {
+        this.innerJoinOrderTables.add(table);
         this.innerJoinTables.put(table, condition);
         return this;
     }
 
     @Override
     public Query leftJoin(Table table, Condition condition) {
+        this.leftJoinOrderTables.add(table);
         this.leftJoinTables.put(table, condition);
         return this;
     }

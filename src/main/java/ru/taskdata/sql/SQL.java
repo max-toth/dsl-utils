@@ -66,7 +66,9 @@ public class SQL {
     }
 
     public static Query select(String ... fields) {
-        return null;
+        SelectQuery query = new SelectQuery();
+        query.setFields(fields);
+        return query;
     }
 
     public static Query select(Field ... fields) {
