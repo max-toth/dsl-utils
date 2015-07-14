@@ -31,6 +31,36 @@ public class SQL {
         return new Table(table);
     }
 
+    public static Condition condition(String field1, String operator, String field2) {
+        Condition condition = new Condition();
+        condition.setArg1(field1);
+        condition.setArg2(field2);
+        condition.setOperator(operator);
+
+        return condition;
+    }
+
+    public static Condition condition(String prefix, String field1, String operator, String field2) {
+        Condition condition = condition(field1, operator, field2);
+        condition.setPrefix(prefix);
+        return condition;
+    }
+
+    public static Condition condition(Field field1, String operator, Field field2) {
+        Condition condition = new Condition();
+        condition.setArg1(field1.getField());
+        condition.setArg2(field2.getField());
+        condition.setOperator(operator);
+
+        return condition;
+    }
+
+    public static Condition condition(String prefix, Field field1, String operator, Field field2) {
+        Condition condition = condition(field1, operator, field2);
+        condition.setPrefix(prefix);
+        return condition;
+    }
+
     public static Condition condition(String table) {
         return new Condition();
     }

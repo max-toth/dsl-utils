@@ -168,6 +168,11 @@ public class SelectQuery implements Query {
         return this;
     }
 
+    @Override
+    public Boolean hasConditions() {
+        return !this.conditions.isEmpty();
+    }
+
     private String conditionsToString() {
         StringBuilder builder = new StringBuilder();
         for (Condition condition : this.conditions) {

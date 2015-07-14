@@ -6,15 +6,16 @@ package ru.taskdata.sql;
  */
 public interface Query {
     Query from(String table);
+
     Query from(Table table);
+
     Query where(Condition condition);
 
     String build() throws Exception;
 
     Query and(Condition condition);
+
     Query or(Condition condition);
-
-
 
     Query innerJoin(Table table, Condition condition);
 
@@ -27,4 +28,6 @@ public interface Query {
     Query offset(String placeholder);
 
     Query offset(Integer value);
+
+    Boolean hasConditions();
 }
